@@ -3,7 +3,10 @@ package huhu.com.qrback.Activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,6 +15,9 @@ import android.widget.Toast;
 
 import com.google.zxing.WriterException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -27,6 +33,7 @@ public class NewMemberActivity extends Activity {
     private Button btn_sendMessage;
     private ImageView img_qrcode;
     private String mid, name, job, phone;
+    private Bitmap qrCodeBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +68,11 @@ public class NewMemberActivity extends Activity {
                     getQRcode(edt_name.getText().toString().trim());
                     //将该成员写入数据库
                     addNewMember();
+                    try {
+                        sendMessage("15165151661");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 } catch (WriterException e) {
@@ -80,7 +92,7 @@ public class NewMemberActivity extends Activity {
         String contentString2 = URLEncoder.encode(contentString.toString(), "utf-8");
         if (!contentString.equals("")) {
             // 根据字符串生成二维码图片并显示在界面上，第二个参数为图片的大小（200*200）
-            Bitmap qrCodeBitmap = EncodingHandler.createQRCode(contentString2, 200);
+            qrCodeBitmap = EncodingHandler.createQRCode(contentString2, 200);
             img_qrcode.setImageBitmap(qrCodeBitmap);
         } else {
             Toast.makeText(NewMemberActivity.this, "写入字符串为空", Toast.LENGTH_SHORT).show();
@@ -96,7 +108,7 @@ public class NewMemberActivity extends Activity {
         } else {
             new AddMemberConnection(mid, name, job, phone, new AddMemberConnection.AddSuccess() {
                 @Override
-                public void onSuccess(String result) {
+                public void onSuccess(String result) throws IOException {
                     switch (result) {
                         case "-1":
                             break;
@@ -105,6 +117,9 @@ public class NewMemberActivity extends Activity {
                             edt_name.setText("");
                             edt_phone.setText("");
                             edt_job.setText("");
+                           //调用彩信发送界面
+                            //sendMessage(phone);
+
                             break;
                         case "2":
                             break;
@@ -121,4 +136,58 @@ public class NewMemberActivity extends Activity {
         }
     }
 
+    private void sendMessage(String phone) throws IOException {
+
+        String url = saveBitmap(phone, qrCodeBitmap);
+        Log.e("url", url);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setClassName("com.android.mms", "com.android.mms.ui.ComposeMessageActivity");
+        intent.putExtra("subject", "彩信主题");
+        intent.putExtra("sms_body", "body");
+        intent.putExtra("address", phone);
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
+        intent.setType("image/*");
+        startActivity(intent);
+    }
+
+    /**
+     * 保存图片到本地的方法
+     */
+    public String saveBitmap(String phone, Bitmap bitmap) throws IOException {
+        String SavePath = getSDCardPath();
+        File path = new File(SavePath);
+        //文件
+        String filepath = SavePath + "/qr.png";
+        File file = new File(filepath);
+        if (!path.exists()) {
+            path.mkdirs();
+        }
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        FileOutputStream fos = new FileOutputStream(file);
+        if (null != fos) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+            try {
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return filepath;
+    }
+
+    private String getSDCardPath() {
+        File sdcardDir = null;
+        //判断SDCard是否存在
+        boolean sdcardExist = Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+        if (sdcardExist) {
+            sdcardDir = Environment.getExternalStorageDirectory();
+        }
+        return sdcardDir.toString();
+    }
 }

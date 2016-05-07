@@ -1,5 +1,7 @@
 package huhu.com.qrback.Net;
 
+import java.io.IOException;
+
 import huhu.com.qrback.Config.Config;
 
 /**
@@ -11,7 +13,11 @@ public class AddMemberConnection {
         new NetConnection(Config.URL_ADDMEMBER, HttpMethod.POST, new NetConnection.SuccessCallback() {
             @Override
             public void onSuccess(String result) {
-                addSuccess.onSuccess(result);
+                try {
+                    addSuccess.onSuccess(result);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }, new NetConnection.FailCallback() {
             @Override
@@ -27,7 +33,7 @@ public class AddMemberConnection {
      * 成功接口
      */
     public interface AddSuccess {
-        void onSuccess(String result);
+        void onSuccess(String result) throws IOException;
     }
 
     /**
