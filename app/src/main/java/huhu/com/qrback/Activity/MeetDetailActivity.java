@@ -3,6 +3,8 @@ package huhu.com.qrback.Activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -14,12 +16,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import huhu.com.qrback.Adapter.MeetPointAdapter;
+import huhu.com.qrback.Config.Config;
 import huhu.com.qrback.Net.CutMeetConnection;
+import huhu.com.qrback.Net.GetPrintInfo;
 import huhu.com.qrback.R;
 import huhu.com.qrback.Util.PointsBean;
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 
 public class MeetDetailActivity extends Activity {
     private TextView tv_name, tv_content, tv_starttime, tv_endtime, tv_status;
@@ -115,6 +125,72 @@ public class MeetDetailActivity extends Activity {
 
         } else {
             btn_cut.setText("打印会议信息");
+            btn_cut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new GetPrintInfo(Config.URL_GETPRINTINFO,4+"", new GetPrintInfo.GetSuccess() {
+                        @Override
+                        public void onSuccess(String result) {
+                            try {
+
+                                List<String> slist = new ArrayList<String>();
+                                List<String> unslist = new ArrayList<String>();
+
+                                JSONArray jsonArray = new JSONArray(result);
+                                JSONObject info = jsonArray.getJSONObject(0);
+                                String mname = info.getString("mname");
+                                info = jsonArray.getJSONObject(1);
+                                JSONArray array = info.getJSONArray("speople");
+                                for (int i = 0 ; i < array.length() ;  ++i){
+                                    slist.add(i,array.getJSONObject(i).getString("pname"));
+                                    Log.d("antdlx",array.getJSONObject(i).getString("pname"));
+                                }
+                                info = jsonArray.getJSONObject(2);
+                                array = info.getJSONArray("unspeople");
+                                for (int i = 0 ; i < array.length() ;  ++i){
+                                    unslist.add(i,array.getJSONObject(i).getString("pname"));
+                                    Log.d("antdlx",array.getJSONObject(i).getString("pname"));
+                                }
+
+                                //生成excel
+                                File f = Environment.getExternalStorageDirectory();
+                                try {
+                                    //t.xls为要新建的文件名
+                                    WritableWorkbook book= Workbook.createWorkbook(new File(f.getPath() + "/SignResult.xls"));
+                                    WritableSheet sheet=book.createSheet("第一页",0);
+                                    sheet.addCell(new Label(0,0,mname));
+                                    sheet.addCell(new Label(0,1,"姓名"));
+                                    sheet.addCell(new Label(1,1,"状态"));
+                                    for(int i=0;i<slist.size();i++){
+                                        sheet.addCell(new Label(0,i+2,slist.get(i)));
+                                        sheet.addCell(new Label(1,i+2,"已签到"));
+                                    }
+                                    for(int i=0;i<unslist.size();i++){
+                                        sheet.addCell(new Label(0,i+2+slist.size(),unslist.get(i)));
+                                        sheet.addCell(new Label(1,i+2+slist.size(),"未签到"));
+                                    }
+                                    //写入数据
+                                    book.write();
+                                    //关闭文件
+                                    book.close();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new GetPrintInfo.GetFailed() {
+                        @Override
+                        public void onFailed() {
+
+                        }
+                    });
+                }
+            });
+
             JSONArray array = new JSONArray(result);
             //获取会议详细信息
             JSONObject meetdetail = array.getJSONObject(0);

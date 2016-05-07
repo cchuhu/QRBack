@@ -14,6 +14,6 @@ public class Config {
     public static final String URL_GETSIGN = "http://" + LOCALHOST + ":8080/servlet/GetPoints";
     public static final String URL_ADDMEET = "http://" + LOCALHOST + ":8080/servlet/AddMeeting";
     public static final String URL_CUT = "http://" + LOCALHOST + ":8080/servlet/MeetingOver";
-
+    public static final String URL_GETPRINTINFO = "http://" + LOCALHOST + ":8080/servlet/GetPrintInfo";
 
 }
