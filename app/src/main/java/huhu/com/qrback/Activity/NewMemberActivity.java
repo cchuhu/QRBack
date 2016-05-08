@@ -62,11 +62,11 @@ public class NewMemberActivity extends Activity {
         edt_phone = (EditText) findViewById(R.id.edt_phone);
         btn_sendMessage = (Button) findViewById(R.id.btn_sendmessage);
         img_qrcode = (ImageView) findViewById(R.id.img_qrcode);
-        btn_back=(ImageButton)findViewById(R.id.btn_backtomeet);
+        btn_back = (ImageButton) findViewById(R.id.btn_backtomeet);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(NewMemberActivity.this,MeetActivity.class);
+                Intent i = new Intent(NewMemberActivity.this, MeetActivity.class);
                 startActivity(i);
                 finish();
             }
@@ -80,9 +80,9 @@ public class NewMemberActivity extends Activity {
                     //将该成员写入数据库
                     addNewMember();
                     try {
-                        if (phone.isEmpty()){
-                            Toast.makeText(NewMemberActivity.this,"请输入手机号",Toast.LENGTH_SHORT).show();
-                        }else {
+                        if (phone.isEmpty()) {
+                            Toast.makeText(NewMemberActivity.this, "请输入手机号", Toast.LENGTH_SHORT).show();
+                        } else {
                             sendMessage(phone);
                         }
                     } catch (IOException e) {
@@ -132,7 +132,7 @@ public class NewMemberActivity extends Activity {
                             edt_name.setText("");
                             edt_phone.setText("");
                             edt_job.setText("");
-                           //调用彩信发送界面
+                            //调用彩信发送界面
                             //sendMessage(phone);
 
                             break;
@@ -153,14 +153,14 @@ public class NewMemberActivity extends Activity {
 
     private void sendMessage(String phone) throws IOException {
         String url = saveBitmap(phone, qrCodeBitmap);
-        Intent sendIntent = new Intent(Intent.ACTION_SEND,  Uri.parse("mms://"));
+        Intent sendIntent = new Intent(Intent.ACTION_SEND, Uri.parse("mms://"));
         sendIntent.setType("image/jpeg");
         File f = Environment.getExternalStorageDirectory();
-        String qr_url = "file:"+f.getPath()+"/qr.png";
+        String qr_url = "file:" + f.getPath() + "/qr.png";
 //        String url2 ="file:/storage/emulated/0/qr.png";
-        Log.d("antdlx",qr_url);
+        Log.d("antdlx", qr_url);
         sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(qr_url));
-        sendIntent.putExtra("address",phone);
+        sendIntent.putExtra("address", phone);
         sendIntent.putExtra("sms_body", "参与会议时请凭此二维码签到");
         startActivity(Intent.createChooser(sendIntent, "MMS:"));
     }
