@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ public class MeetDetailActivity extends Activity {
     private TextView tv_name, tv_content, tv_starttime, tv_endtime, tv_status;
     private ListView lv_notfound, lv_pointdetail;
     private Button btn_cut;
+    private ImageButton btn_back;
     private ArrayList<PointsBean> list_points = new ArrayList<>();
     private ArrayList<String> list_people = new ArrayList<>();
     private ArrayAdapter arrayAdapter;
@@ -62,8 +64,17 @@ public class MeetDetailActivity extends Activity {
         tv_status = (TextView) findViewById(R.id.tv_getmeetstatus);
         lv_notfound = (ListView) findViewById(R.id.lv_notfound);
         lv_pointdetail = (ListView) findViewById(R.id.lv_signpoint);
+        btn_back=(ImageButton)findViewById(R.id.btn_backtomain);
         btn_cut = (Button) findViewById(R.id.btn_cutmeet);
         arrayAdapter = new ArrayAdapter(MeetDetailActivity.this, android.R.layout.simple_expandable_list_item_1);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(MeetDetailActivity.this,MeetActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
     }
 
     //初始化数据
@@ -71,9 +82,10 @@ public class MeetDetailActivity extends Activity {
         Intent intent = getIntent();
         String type = intent.getExtras().get("type").toString();
         String result = intent.getExtras().get("result").toString();
+         mid = intent.getExtras().get("mid").toString();
         //区分会议类型
         if (type.equals("current")) {
-            mid = intent.getExtras().get("mid").toString();
+           // mid = intent.getExtras().get("mid").toString();
             lv_notfound.setVisibility(View.GONE);
             JSONArray array = new JSONArray(result);
             //获取会议详细信息
@@ -110,6 +122,8 @@ public class MeetDetailActivity extends Activity {
                         public void onSuccess(String result) {
                             if (result.equals("1")) {
                                 Toast.makeText(MeetDetailActivity.this, "结束成功", Toast.LENGTH_SHORT).show();
+                                Intent i=new Intent(MeetDetailActivity.this,MeetActivity.class);
+                                startActivity(i);
                                 MeetDetailActivity.this.finish();
                             }
                         }
@@ -128,7 +142,7 @@ public class MeetDetailActivity extends Activity {
             btn_cut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new GetPrintInfo(Config.URL_GETPRINTINFO,4+"", new GetPrintInfo.GetSuccess() {
+                    new GetPrintInfo(Config.URL_GETPRINTINFO,mid, new GetPrintInfo.GetSuccess() {
                         @Override
                         public void onSuccess(String result) {
                             try {

@@ -54,6 +54,7 @@ public class MeetActivity extends FragmentActivity {
             public void onClick(View view) {
                 Intent i = new Intent(MeetActivity.this, NewMeetActivity.class);
                 startActivity(i);
+                finish();
             }
         });
 

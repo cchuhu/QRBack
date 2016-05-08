@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class NewMemberActivity extends Activity {
     private ImageView img_qrcode;
     private String mid, name, job, phone;
     private Bitmap qrCodeBitmap;
+    private ImageButton btn_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,15 @@ public class NewMemberActivity extends Activity {
         edt_phone = (EditText) findViewById(R.id.edt_phone);
         btn_sendMessage = (Button) findViewById(R.id.btn_sendmessage);
         img_qrcode = (ImageView) findViewById(R.id.img_qrcode);
+        btn_back=(ImageButton)findViewById(R.id.btn_backtomeet);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(NewMemberActivity.this,MeetActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
         btn_sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +80,11 @@ public class NewMemberActivity extends Activity {
                     //将该成员写入数据库
                     addNewMember();
                     try {
-                        sendMessage("15165151661");
+                        if (phone.isEmpty()){
+                            Toast.makeText(NewMemberActivity.this,"请输入手机号",Toast.LENGTH_SHORT).show();
+                        }else {
+                            sendMessage(phone);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
