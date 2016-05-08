@@ -137,13 +137,14 @@ public class MeetDetailActivity extends Activity {
 
 
         } else {
+            mid = intent.getExtras().get("mid").toString();
             //将添加成员按钮隐藏
             btn_addMember.setVisibility(View.GONE);
             btn_cut.setText("打印会议信息");
             btn_cut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new GetPrintInfo(Config.URL_GETPRINTINFO, 4 + "", new GetPrintInfo.GetSuccess() {
+                    new GetPrintInfo(Config.URL_GETPRINTINFO, mid, new GetPrintInfo.GetSuccess() {
                         @Override
                         public void onSuccess(String result) {
                             try {

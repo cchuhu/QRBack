@@ -41,7 +41,7 @@ public class HistoryFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, null);
         lv_history = (ListView) view.findViewById(R.id.lv_history);
         //获取数据
@@ -72,8 +72,9 @@ public class HistoryFragment extends Fragment {
 //点击列表项下载数据
         lv_history.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                new MeetInfoConnection(list.get(i).getMid(), new MeetInfoConnection.GetSuccess() {
+            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                final String mid = list.get(i).getMid();
+                new MeetInfoConnection(mid, new MeetInfoConnection.GetSuccess() {
                     @Override
                     public void onSuccess(String result) {
                         switch (result) {
@@ -84,6 +85,7 @@ public class HistoryFragment extends Fragment {
                                 Intent intent = new Intent();
                                 intent.putExtra("result", result);
                                 intent.putExtra("type", "history");
+                                intent.putExtra("mid", mid);
                                 intent.setClass(getContext(), MeetDetailActivity.class);
                                 startActivity(intent);
                         }
