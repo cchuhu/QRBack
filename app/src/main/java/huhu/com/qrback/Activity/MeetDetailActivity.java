@@ -170,19 +170,20 @@ public class MeetDetailActivity extends Activity {
                                 //生成excel
                                 File f = Environment.getExternalStorageDirectory();
                                 try {
-                                    //t.xls为要新建的文件名
+                                    //SignResult.xls为要新建的文件名
                                     WritableWorkbook book = Workbook.createWorkbook(new File(f.getPath() + "/SignResult.xls"));
                                     WritableSheet sheet = book.createSheet("第一页", 0);
                                     sheet.addCell(new Label(0, 0, mname));
                                     sheet.addCell(new Label(0, 1, "姓名"));
                                     sheet.addCell(new Label(1, 1, "状态"));
+                                    sheet.addCell(new Label(0, 2, "会议内容"));
                                     for (int i = 0; i < slist.size(); i++) {
-                                        sheet.addCell(new Label(0, i + 2, slist.get(i)));
-                                        sheet.addCell(new Label(1, i + 2, "已签到"));
+                                        sheet.addCell(new Label(0, i + 3, slist.get(i)));
+                                        sheet.addCell(new Label(1, i + 3, "已签到"));
                                     }
                                     for (int i = 0; i < unslist.size(); i++) {
-                                        sheet.addCell(new Label(0, i + 2 + slist.size(), unslist.get(i)));
-                                        sheet.addCell(new Label(1, i + 2 + slist.size(), "未签到"));
+                                        sheet.addCell(new Label(0, i + 3 + slist.size(), unslist.get(i)));
+                                        sheet.addCell(new Label(1, i + 3 + slist.size(), "未签到"));
                                     }
                                     //写入数据
                                     book.write();
