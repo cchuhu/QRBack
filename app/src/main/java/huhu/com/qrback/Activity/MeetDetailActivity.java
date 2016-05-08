@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,12 +34,12 @@ import jxl.write.WritableWorkbook;
 public class MeetDetailActivity extends Activity {
     private TextView tv_name, tv_content, tv_starttime, tv_endtime, tv_status;
     private ListView lv_notfound, lv_pointdetail;
-    private Button btn_cut;
-    private ImageButton btn_back;
+    private Button btn_cut, btn_addMember;
     private ArrayList<PointsBean> list_points = new ArrayList<>();
     private ArrayList<String> list_people = new ArrayList<>();
     private ArrayAdapter arrayAdapter;
     private String mid;
+
 
     @Override
 
@@ -64,17 +63,9 @@ public class MeetDetailActivity extends Activity {
         tv_status = (TextView) findViewById(R.id.tv_getmeetstatus);
         lv_notfound = (ListView) findViewById(R.id.lv_notfound);
         lv_pointdetail = (ListView) findViewById(R.id.lv_signpoint);
-        btn_back=(ImageButton)findViewById(R.id.btn_backtomain);
         btn_cut = (Button) findViewById(R.id.btn_cutmeet);
+        btn_addMember = (Button) findViewById(R.id.btn_addMember);
         arrayAdapter = new ArrayAdapter(MeetDetailActivity.this, android.R.layout.simple_expandable_list_item_1);
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(MeetDetailActivity.this,MeetActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });
     }
 
     //初始化数据
@@ -82,10 +73,20 @@ public class MeetDetailActivity extends Activity {
         Intent intent = getIntent();
         String type = intent.getExtras().get("type").toString();
         String result = intent.getExtras().get("result").toString();
-         mid = intent.getExtras().get("mid").toString();
         //区分会议类型
         if (type.equals("current")) {
-           // mid = intent.getExtras().get("mid").toString();
+            mid = intent.getExtras().get("mid").toString();
+            //跳转到添加成员界面
+            btn_addMember.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(MeetDetailActivity.this, NewMemberActivity.class);
+                    i.putExtra("mid", mid);
+                    startActivity(i);
+                }
+            });
+
+
             lv_notfound.setVisibility(View.GONE);
             JSONArray array = new JSONArray(result);
             //获取会议详细信息
@@ -122,8 +123,6 @@ public class MeetDetailActivity extends Activity {
                         public void onSuccess(String result) {
                             if (result.equals("1")) {
                                 Toast.makeText(MeetDetailActivity.this, "结束成功", Toast.LENGTH_SHORT).show();
-                                Intent i=new Intent(MeetDetailActivity.this,MeetActivity.class);
-                                startActivity(i);
                                 MeetDetailActivity.this.finish();
                             }
                         }
@@ -138,11 +137,13 @@ public class MeetDetailActivity extends Activity {
 
 
         } else {
+            //将添加成员按钮隐藏
+            btn_addMember.setVisibility(View.GONE);
             btn_cut.setText("打印会议信息");
             btn_cut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new GetPrintInfo(Config.URL_GETPRINTINFO,mid, new GetPrintInfo.GetSuccess() {
+                    new GetPrintInfo(Config.URL_GETPRINTINFO, 4 + "", new GetPrintInfo.GetSuccess() {
                         @Override
                         public void onSuccess(String result) {
                             try {
@@ -155,33 +156,33 @@ public class MeetDetailActivity extends Activity {
                                 String mname = info.getString("mname");
                                 info = jsonArray.getJSONObject(1);
                                 JSONArray array = info.getJSONArray("speople");
-                                for (int i = 0 ; i < array.length() ;  ++i){
-                                    slist.add(i,array.getJSONObject(i).getString("pname"));
-                                    Log.d("antdlx",array.getJSONObject(i).getString("pname"));
+                                for (int i = 0; i < array.length(); ++i) {
+                                    slist.add(i, array.getJSONObject(i).getString("pname"));
+                                    Log.d("antdlx", array.getJSONObject(i).getString("pname"));
                                 }
                                 info = jsonArray.getJSONObject(2);
                                 array = info.getJSONArray("unspeople");
-                                for (int i = 0 ; i < array.length() ;  ++i){
-                                    unslist.add(i,array.getJSONObject(i).getString("pname"));
-                                    Log.d("antdlx",array.getJSONObject(i).getString("pname"));
+                                for (int i = 0; i < array.length(); ++i) {
+                                    unslist.add(i, array.getJSONObject(i).getString("pname"));
+                                    Log.d("antdlx", array.getJSONObject(i).getString("pname"));
                                 }
 
                                 //生成excel
                                 File f = Environment.getExternalStorageDirectory();
                                 try {
                                     //t.xls为要新建的文件名
-                                    WritableWorkbook book= Workbook.createWorkbook(new File(f.getPath() + "/SignResult.xls"));
-                                    WritableSheet sheet=book.createSheet("第一页",0);
-                                    sheet.addCell(new Label(0,0,mname));
-                                    sheet.addCell(new Label(0,1,"姓名"));
-                                    sheet.addCell(new Label(1,1,"状态"));
-                                    for(int i=0;i<slist.size();i++){
-                                        sheet.addCell(new Label(0,i+2,slist.get(i)));
-                                        sheet.addCell(new Label(1,i+2,"已签到"));
+                                    WritableWorkbook book = Workbook.createWorkbook(new File(f.getPath() + "/SignResult.xls"));
+                                    WritableSheet sheet = book.createSheet("第一页", 0);
+                                    sheet.addCell(new Label(0, 0, mname));
+                                    sheet.addCell(new Label(0, 1, "姓名"));
+                                    sheet.addCell(new Label(1, 1, "状态"));
+                                    for (int i = 0; i < slist.size(); i++) {
+                                        sheet.addCell(new Label(0, i + 2, slist.get(i)));
+                                        sheet.addCell(new Label(1, i + 2, "已签到"));
                                     }
-                                    for(int i=0;i<unslist.size();i++){
-                                        sheet.addCell(new Label(0,i+2+slist.size(),unslist.get(i)));
-                                        sheet.addCell(new Label(1,i+2+slist.size(),"未签到"));
+                                    for (int i = 0; i < unslist.size(); i++) {
+                                        sheet.addCell(new Label(0, i + 2 + slist.size(), unslist.get(i)));
+                                        sheet.addCell(new Label(1, i + 2 + slist.size(), "未签到"));
                                     }
                                     //写入数据
                                     book.write();
@@ -227,7 +228,6 @@ public class MeetDetailActivity extends Activity {
                 pointsBean.setSnum(obj.get("snum").toString());
                 list_points.add(pointsBean);
             }
-            lv_pointdetail.setAdapter(new MeetPointAdapter(MeetDetailActivity.this, list_points));
             //设置缺席人列表
             JSONArray notfind = notfound.getJSONArray("pnames");
             for (int i = 0; i < notfind.length(); i++) {
