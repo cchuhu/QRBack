@@ -137,24 +137,26 @@ public class NewMemberActivity extends Activity {
     }
 
     private void sendMessage(String phone) throws IOException {
-
         String url = saveBitmap(phone, qrCodeBitmap);
-        Log.e("url", url);
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setClassName("com.android.mms", "com.android.mms.ui.ComposeMessageActivity");
-        intent.putExtra("subject", "彩信主题");
-        intent.putExtra("sms_body", "body");
-        intent.putExtra("address", phone);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
-        intent.setType("image/*");
-        startActivity(intent);
+        Intent sendIntent = new Intent(Intent.ACTION_SEND,  Uri.parse("mms://"));
+        sendIntent.setType("image/jpeg");
+        File f = Environment.getExternalStorageDirectory();
+        String qr_url = "file:"+f.getPath()+"/qr.png";
+//        String url2 ="file:/storage/emulated/0/qr.png";
+        Log.d("antdlx",qr_url);
+        sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(qr_url));
+        sendIntent.putExtra("address",phone);
+        sendIntent.putExtra("sms_body", "参与会议时请凭此二维码签到");
+        startActivity(Intent.createChooser(sendIntent, "MMS:"));
     }
+
 
     /**
      * 保存图片到本地的方法
      */
     public String saveBitmap(String phone, Bitmap bitmap) throws IOException {
-        String SavePath = getSDCardPath();
+        File f = Environment.getExternalStorageDirectory();
+        String SavePath = f.getPath();
         File path = new File(SavePath);
         //文件
         String filepath = SavePath + "/qr.png";
