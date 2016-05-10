@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import huhu.com.qrback.Net.LoginConnection;
@@ -21,6 +22,7 @@ public class LoginActivity extends Activity {
     //登陆按钮
     private Button btn_login;
     private String name, pass;
+    private TextView tv_register;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,15 @@ public class LoginActivity extends Activity {
         edt_account = (EditText) findViewById(R.id.edt_account);
         edt_password = (EditText) findViewById(R.id.edt_password);
         btn_login = (Button) findViewById(R.id.btn_login);
+        tv_register = (TextView) findViewById(R.id.tv_register);
 
+        tv_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this,RegisterActivity.class);
+                startActivity(i);
+            }
+        });
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override

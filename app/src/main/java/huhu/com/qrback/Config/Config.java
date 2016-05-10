@@ -5,7 +5,8 @@ package huhu.com.qrback.Config;
  */
 public class Config {
     public static final String CHARSET = "utf-8";
-    public static final String LOCALHOST = "121.250.219.167";
+    public static final String LOCALHOST = "121.250.222.136";
+    public static final String URL_REGISTER = "http://" + LOCALHOST + ":8080/servlet/RegistRoot";
     public static final String URL_LOGIN = "http://" + LOCALHOST + ":8080/servlet/RootLogin";
     public static final String URL_CURRENT = "http://" + LOCALHOST + ":8080/servlet/GetMeetings";
     public static final String URL_HISTORY = "http://" + LOCALHOST + ":8080/servlet/GetHistoryMeetings";

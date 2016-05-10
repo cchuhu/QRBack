@@ -91,6 +91,7 @@ public class CurrentFragment extends Fragment {
                                 intent.putExtra("mid", mid);
                                 intent.setClass(getContext(), MeetDetailActivity.class);
                                 startActivity(intent);
+                                getActivity().finish();
                         }
 
                     }

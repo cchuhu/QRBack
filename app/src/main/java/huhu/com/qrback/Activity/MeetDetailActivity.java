@@ -155,6 +155,7 @@ public class MeetDetailActivity extends Activity {
                                 JSONArray jsonArray = new JSONArray(result);
                                 JSONObject info = jsonArray.getJSONObject(0);
                                 String mname = info.getString("mname");
+                                String content  = info.getString("mcontent");
                                 info = jsonArray.getJSONObject(1);
                                 JSONArray array = info.getJSONArray("speople");
                                 for (int i = 0; i < array.length(); ++i) {
@@ -175,9 +176,11 @@ public class MeetDetailActivity extends Activity {
                                     WritableWorkbook book = Workbook.createWorkbook(new File(f.getPath() + "/SignResult.xls"));
                                     WritableSheet sheet = book.createSheet("第一页", 0);
                                     sheet.addCell(new Label(0, 0, mname));
-                                    sheet.addCell(new Label(0, 1, "姓名"));
-                                    sheet.addCell(new Label(1, 1, "状态"));
-                                    sheet.addCell(new Label(0, 2, "会议内容"));
+                                    sheet.addCell(new Label(0, 1, "会议内容"));
+                                    sheet.addCell(new Label(1, 1, content));
+                                    sheet.addCell(new Label(0, 2, "姓名"));
+                                    sheet.addCell(new Label(1, 2, "状态"));
+
                                     for (int i = 0; i < slist.size(); i++) {
                                         sheet.addCell(new Label(0, i + 3, slist.get(i)));
                                         sheet.addCell(new Label(1, i + 3, "已签到"));
