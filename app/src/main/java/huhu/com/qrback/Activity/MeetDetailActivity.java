@@ -212,38 +212,64 @@ public class MeetDetailActivity extends Activity {
             });
 
             JSONArray array = new JSONArray(result);
-            //获取会议详细信息
-            JSONObject meetdetail = array.getJSONObject(0);
-            //获取会议签到表信息
-            JSONObject meetpoints = array.getJSONObject(1);
-            //获取缺席人列表
-            JSONObject notfound = array.getJSONObject(2);
-            //设置会议详细数据
-            tv_name.setText(meetdetail.get("mname").toString());
-            tv_content.setText(meetdetail.get("mcontent").toString());
-            tv_status.setText("已结束");
-            tv_starttime.setText(meetdetail.get("mstarttime").toString());
-            tv_endtime.setText(meetdetail.get("mendtime").toString());
-            //设置列表
-            JSONArray jsonArray = meetpoints.getJSONArray("spoints");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject obj = jsonArray.getJSONObject(i);
-                PointsBean pointsBean = new PointsBean();
-                pointsBean.setSpoint(obj.get("spoint").toString());
-                pointsBean.setSnum(obj.get("snum").toString());
-                list_points.add(pointsBean);
-            }
-            //设置缺席人列表
-            JSONArray notfind = notfound.getJSONArray("pnames");
-            for (int i = 0; i < notfind.length(); i++) {
-                JSONObject obj = notfind.getJSONObject(i);
-                arrayAdapter.add(obj.getString("pname"));
-            }
-            lv_notfound.setAdapter(arrayAdapter);
+            Log.d("arraysize",array.length()+"<<<<<<<");
+            if (array.length()==2){
+                //获取会议详细信息
+                JSONObject meetdetail = array.getJSONObject(0);
+                //获取缺席人列表
+                JSONObject notfound = array.getJSONObject(1);
 
+                //设置会议详细数据
+                tv_name.setText(meetdetail.get("mname").toString());
+                tv_content.setText(meetdetail.get("mcontent").toString());
+                tv_status.setText("已结束");
+                tv_starttime.setText(meetdetail.get("mstarttime").toString());
+                tv_endtime.setText(meetdetail.get("mendtime").toString());
+
+
+                //设置缺席人列表
+                JSONArray notfind = notfound.getJSONArray("pnames");
+                for (int i = 0; i < notfind.length(); i++) {
+                    JSONObject obj = notfind.getJSONObject(i);
+                    arrayAdapter.add(obj.getString("pname"));
+                }
+                lv_notfound.setAdapter(arrayAdapter);
+            }else{
+                //获取会议详细信息
+                JSONObject meetdetail = array.getJSONObject(0);
+                //获取会议签到表信息
+                JSONObject meetpoints = array.getJSONObject(1);
+                //获取缺席人列表
+                JSONObject notfound = array.getJSONObject(2);
+
+                //设置会议详细数据
+                tv_name.setText(meetdetail.get("mname").toString());
+                tv_content.setText(meetdetail.get("mcontent").toString());
+                tv_status.setText("已结束");
+                tv_starttime.setText(meetdetail.get("mstarttime").toString());
+                tv_endtime.setText(meetdetail.get("mendtime").toString());
+
+                //设置列表
+                JSONArray jsonArray = meetpoints.getJSONArray("spoints");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    PointsBean pointsBean = new PointsBean();
+                    pointsBean.setSpoint(obj.get("spoint").toString());
+                    pointsBean.setSnum(obj.get("snum").toString());
+                    list_points.add(pointsBean);
+                }
+
+
+                //设置缺席人列表
+                JSONArray notfind = notfound.getJSONArray("pnames");
+                for (int i = 0; i < notfind.length(); i++) {
+                    JSONObject obj = notfind.getJSONObject(i);
+                    arrayAdapter.add(obj.getString("pname"));
+                }
+                lv_notfound.setAdapter(arrayAdapter);
+            }
 
         }
-
 
     }
 }
